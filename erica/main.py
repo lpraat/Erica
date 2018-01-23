@@ -1,7 +1,9 @@
-import discord
+import asyncio
 import logging
 from os import getenv
-import asyncio
+
+import discord
+
 from erica.erica_bot import Erica
 
 DESCRIPTION = '''

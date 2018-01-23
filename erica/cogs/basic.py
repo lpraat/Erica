@@ -1,6 +1,7 @@
-from discord.ext import commands
 import logging
 import random
+
+from discord.ext import commands
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,8 @@ class Basic():
 
     @commands.command()
     async def repeat(self, times, *message):
-        """Repeats a message by speaking out loudly
+        """
+        Repeats a message by speaking out loudly
         :param times: the number of times the message needs to be repeated.
         :param the message: the message to be repeated.
         """
@@ -54,6 +56,6 @@ class Basic():
 
 def setup(bot):
     """
-    This method is needed for this extension to be loaded properly.
+    This method is needed for this extension to be loaded properly by the bot.
     """
     bot.add_cog(Basic(bot))

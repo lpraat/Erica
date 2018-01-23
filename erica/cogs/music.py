@@ -1,8 +1,9 @@
+import asyncio
+import logging
+from asyncio import Lock
+
 from discord import Embed
 from discord.ext import commands
-import logging
-import asyncio
-from asyncio import Lock
 
 from erica.api.yt_api import get_video_info, is_video_valid
 from erica.utils import get_param
@@ -37,22 +38,35 @@ class MPlayer():
 
     def startup(self):
         """
-        Starts the play loop.
+        Starts the play loop without blocking.
         """
         asyncio.ensure_future(self.play())
 
     async def add_song_to_player(self):
+        """
+        Pops one song from the queue and puts it in the play queue.
+        """
         song = self.queue.pop(0)
         await self.play_queue.put(song)
 
     async def next_with_last_check(self):
+        """
+        Checks if there is at least one song in the queue to process.
+        If so it puts in the player otherwise the music player is reset(last song has been played and it is possible to
+        left the voice channel.
+        """
         if self.queue:
             await self.add_song_to_player()
         else:
+            logging.info("Resetting music player")
             self.voice = None
             await self.cog.reset_music()
 
     async def add_song(self, song):
+        """
+        Adds a song to the queue.
+        :param song: the song to be added.
+        """
         self.queue.append(song)
         if len(self.queue) == 1 and self.curr_song == None:
             await self.add_song_to_player()
@@ -60,16 +74,27 @@ class MPlayer():
         await self.bot.send_message(self.channel, embed=self.get_embed("Added song:", song.title))
 
     async def play(self):
+        """
+        This is the loop running the player.
+        It processes song from the play queue.
+        """
         while self.voice:
             self.curr_song = await self.play_queue.get()
             self.player = await self.voice.create_ytdl_player(self.curr_song.url, after=self.after_song)
             self.player.start()
             await self.bot.send_message(self.channel, embed=self.get_embed("Now playing:", self.curr_song.title))
+
+            # waiting until the next song need to be played(by checking the play_next flag)
             await self.play_next.wait()
             await self.next_with_last_check()
+
+            # resetting the play_next flag
             self.play_next.clear()
 
     async def skip(self):
+        """
+        If the player is active, i.e. there is a song playing or paused, skips the current song.
+        """
         if self.player:
             self.player.stop()
             await self.bot.send_message(self.channel, embed=self.get_embed("Skipped song:", self.curr_song.title))
@@ -80,6 +105,9 @@ class MPlayer():
         return em
 
     async def playlist(self):
+        """
+        Generates the playlist given the songs in the queue and the current one.
+        """
         description = ""
 
         playing_song = self.curr_song.title if self.curr_song and self.player and self.player.is_playing() else None
@@ -94,18 +122,28 @@ class MPlayer():
         await self.bot.send_message(self.channel, embed=self.get_embed('Playlist', description))
 
     async def pause(self):
+        """
+        Pauses the player.
+        """
         if self.player:
             if self.player.is_playing():
                 self.player.pause()
                 await self.bot.send_message(self.channel, embed=self.get_embed("Paused Player"))
 
     async def resume(self):
+        """
+        Resumes the player.
+        """
         if self.player:
             if not self.player.is_playing():
                 self.player.resume()
                 await self.bot.send_message(self.channel, embed=self.get_embed("Resumed Player"))
 
     async def remove(self, index):
+        """
+        Removes a song from the queue.
+        :param index: the index of the songs in the queue.
+        """
         if self.queue and 0 <= index < len(self.queue):
             song_removed = self.queue[index]
             del self.queue[index]
@@ -113,9 +151,15 @@ class MPlayer():
                                                                            description=song_removed.title))
 
     def after_song(self):
+        """
+        This method is called by the external thread used for playing the song after the song is stopped/consumed.
+        """
         self.bot.loop.call_soon_threadsafe(self.set_play_next)
 
     def set_play_next(self):
+        """
+        Sets the player to be ready to play the next song.
+        """
         self.play_next.set()
         self.player = None
         self.curr_song = None
@@ -225,4 +269,7 @@ class Music():
 
 
 def setup(bot):
+    """
+    This method is needed for this extension to be loaded properly by the bot.
+    """
     bot.add_cog(Music(bot))
