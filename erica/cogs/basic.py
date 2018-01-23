@@ -11,7 +11,7 @@ class Basic():
     """
 
     ASK_ANSWERS = {
-        "1": "Yes! Definitely",
+        "1": "Yes! Definitely.",
         "2": "I think so, but I'm not completely sure. You better ask my brother!",
         "3": "I don't think so. You better ask Lucas!",
         "4": "Shut your mouth, nerd!",
@@ -44,8 +44,9 @@ class Basic():
 
         if "?" not in " ".join(question):
             await self.bot.say("That's not a question, fella!")
-        answer = self.ASK_ANSWERS.get(str(random.randint(1, len(self.ASK_ANSWERS))))
-        await self.bot.say(answer)
+        else:
+            answer = self.ASK_ANSWERS.get(str(random.randint(1, len(self.ASK_ANSWERS))))
+            await self.bot.say(answer)
 
 
 def setup(bot):
