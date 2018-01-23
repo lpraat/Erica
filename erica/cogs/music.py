@@ -11,12 +11,18 @@ logger = logging.getLogger(__name__)
 
 
 class Song():
+    """
+    This class represents a song played by the MPlayer.
+    """
     def __init__(self, title, id):
         self.url = "https://www.youtube.com/watch?v=" + id
         self.title = title
 
 
 class MPlayer():
+    """
+    This class represents the music player used by the music cog to play music.
+    """
     def __init__(self, cog, voice, channel):
         self.cog = cog
         self.bot = cog.bot
@@ -30,6 +36,9 @@ class MPlayer():
         self.startup()
 
     def startup(self):
+        """
+        Starts the play loop.
+        """
         asyncio.ensure_future(self.play())
 
     async def add_song_to_player(self):
@@ -71,7 +80,6 @@ class MPlayer():
         return em
 
     async def playlist(self):
-        print(self.queue)
         description = ""
 
         playing_song = self.curr_song.title if self.curr_song and self.player and self.player.is_playing() else None
@@ -98,8 +106,7 @@ class MPlayer():
                 await self.bot.send_message(self.channel, embed=self.get_embed("Resumed Player"))
 
     async def remove(self, index):
-        if self.queue and 0 < index < len(self.queue):
-            print("sono qua")
+        if self.queue and 0 <= index < len(self.queue):
             song_removed = self.queue[index]
             del self.queue[index]
             await self.bot.send_message(self.channel, embed=self.get_embed(title="Removed Song",
@@ -115,18 +122,25 @@ class MPlayer():
 
 
 class Music():
+    """
+    This class represents the Music cog.
+    It handles Erica's music commands for playing music.
+    """
     def __init__(self, bot):
         self.bot = bot
-        self.m_player = None
+        self.mplayer = None
         self.voice_channel = None
         self.mplayer_lock = Lock()
 
     @commands.command(pass_context=True)
     async def play(self, ctx, url):
+        """
+        Plays a youtube song given the url.
+        :param url: the url of the video
+        """
         with (await self.mplayer_lock):
 
             video_id = get_param(url, "v")
-            print(video_id)
             if not video_id:
                 return
 
@@ -144,51 +158,70 @@ class Music():
                 self.voice = await self.bot.join_voice_channel(self.voice_channel)
                 logger.info(f"Joined channel {self.voice_channel}")
 
-                self.m_player = MPlayer(self, self.voice, channel)
+                self.mplayer = MPlayer(self, self.voice, channel)
 
             new_song = Song(video_info['items'][0]['snippet']['title'], video_id)
-            await self.m_player.add_song(new_song)
+            await self.mplayer.add_song(new_song)
 
     @commands.command()
     async def playlist(self):
-        if self.m_player:
+        """
+        Shows the playlist.
+        """
+        if self.mplayer:
             with (await self.mplayer_lock):
-                await self.m_player.playlist()
+                await self.mplayer.playlist()
 
     @commands.command(pass_context=True)
     async def skip(self, ctx):
-        if self.m_player:
+        """
+        Skips the current song played.
+        """
+        if self.mplayer:
             with (await self.mplayer_lock):
-                await self.m_player.skip()
+                await self.mplayer.skip()
 
     @commands.command()
     async def pause(self):
-        if self.m_player:
+        """
+        Pauses the music player.
+        """
+        if self.mplayer:
             with (await self.mplayer_lock):
-                await self.m_player.pause()
+                await self.mplayer.pause()
 
     @commands.command()
     async def resume(self):
-        if self.m_player:
+        """
+        Resumes the music player.
+        """
+        if self.mplayer:
             with (await self.mplayer_lock):
-                await self.m_player.resume()
+                await self.mplayer.resume()
 
     @commands.command()
     async def remove(self, song_number):
-
+        """
+        Removes a song from the playlist.
+        :param song_number: the number of the song in the playlist to be removed.
+        """
         try:
             index = int(song_number)
         except ValueError:
             return
 
-        if self.m_player:
+        if self.mplayer:
             with (await self.mplayer_lock):
-                await self.m_player.remove(index - 1)
+                await self.mplayer.remove(index - 1)
 
     async def reset_music(self):
+        """
+        This method is called by the mplayer when all the songs have been consumed.
+        It disconnects erica from the voice channel and deletes the music player.
+        """
         await self.voice.disconnect()
         self.voice_channel = None
-        self.m_player = None
+        self.mplayer = None
 
 
 def setup(bot):

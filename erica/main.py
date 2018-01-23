@@ -14,17 +14,15 @@ logging.basicConfig(level=logging.INFO)
 
 if not discord.opus.is_loaded():
     # this is required for playing sounds
+    # TODO change the path with the docker container one
     discord.opus.load_opus('/usr/local/Cellar/opus/1.2.1/lib/')
 
 bot = Erica(command_prefix="$", description=DESCRIPTION)
-bot.remove_command("help")
 
 
 @bot.event
 async def on_ready():
-    print("Logged in as " + bot.user.name)
-    print("\n")
-
+    logging.info("Logged in as " + bot.user.name)
 
 @bot.event
 async def on_command_error(error, ctx):
@@ -32,6 +30,9 @@ async def on_command_error(error, ctx):
 
 
 async def load_extension():
+    """
+    Loads all the cogs.
+    """
     for extension in EXTENSIONS:
         try:
             bot.load_extension("cogs." + extension)

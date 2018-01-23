@@ -7,15 +7,18 @@ logger = logging.getLogger(__name__)
 
 class Basic():
     """
-    This Category contains Erica's basic functionality.
+    This class represents the Basic cog.
+    It handles Erica's basic commands.
     """
 
     ASK_ANSWERS = {
         "1": "Yes! Definitely.",
-        "2": "I think so, but I'm not completely sure. You better ask my brother!",
-        "3": "I don't think so. You better ask Lucas!",
-        "4": "Shut your mouth, nerd!",
-        "5": "Nope!"
+        "2": "I'm absolutely sure!",
+        "3": "I think so, but I'm not completely sure. You better ask my brother!",
+        "4": "I don't think so. You better ask Lucas!",
+        "5": "Shut your mouth, nerd!",
+        "6": "Yeeee.. NO!",
+        "7": "Nope!"
     }
 
     def __init__(self, bot):

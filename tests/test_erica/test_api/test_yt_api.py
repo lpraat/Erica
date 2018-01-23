@@ -1,11 +1,9 @@
-import json
+import asyncio
 import unittest
 
 import aiohttp
 
 from erica.api.yt_api import get_video_info, is_video_valid
-
-import asyncio
 
 
 class TestYoutubeAPI(unittest.TestCase):
