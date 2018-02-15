@@ -16,8 +16,7 @@ logging.basicConfig(level=logging.INFO)
 
 if not discord.opus.is_loaded():
     # this is required for playing sounds
-    # TODO change the path with the docker container one
-    discord.opus.load_opus('/usr/local/Cellar/opus/1.2.1/lib/')
+    discord.opus.load_opus('/usr/lib/x86_64-linux-gnu/libopus.so.0')
 
 bot = Erica(command_prefix="$", description=DESCRIPTION)
 
@@ -37,12 +36,11 @@ async def load_extension():
     """
     for extension in EXTENSIONS:
         try:
-            bot.load_extension("cogs." + extension)
+            bot.load_extension("erica.cogs." + extension)
             logger.info(f"Added extension {extension}")
         except Exception as e:
             logger.info(f"Failed to load extension {extension}")
             logger.info(f"{e}")
-
 
 if __name__ == "__main__":
     asyncio.wait(asyncio.ensure_future(load_extension()))

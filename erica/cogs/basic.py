@@ -19,7 +19,8 @@ class Basic():
         "4": "I don't think so. You better ask Lucas!",
         "5": "Shut your mouth, nerd!",
         "6": "Yeeee.. NO!",
-        "7": "Nope!"
+        "7": "Nope!",
+        "8": "Don't know. Don't care."
     }
 
     def __init__(self, bot):

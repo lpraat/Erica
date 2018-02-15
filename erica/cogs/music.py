@@ -53,7 +53,7 @@ class MPlayer():
         """
         Checks if there is at least one song in the queue to process.
         If so it puts in the player otherwise the music player is reset(last song has been played and it is possible to
-        left the voice channel.
+        left the voice channel).
         """
         if self.queue:
             await self.add_song_to_player()
@@ -71,7 +71,7 @@ class MPlayer():
         if len(self.queue) == 1 and self.curr_song == None:
             await self.add_song_to_player()
 
-        await self.bot.send_message(self.channel, embed=self.get_embed("Added song:", song.title))
+        await self.bot.send_message(self.channel, embed=self.cog.create_embed("Added song:", song.title))
 
     async def play(self):
         """
@@ -82,7 +82,7 @@ class MPlayer():
             self.curr_song = await self.play_queue.get()
             self.player = await self.voice.create_ytdl_player(self.curr_song.url, after=self.after_song)
             self.player.start()
-            await self.bot.send_message(self.channel, embed=self.get_embed("Now playing:", self.curr_song.title))
+            await self.bot.send_message(self.channel, embed=self.cog.create_embed("Now playing:", self.curr_song.title))
 
             # waiting until the next song need to be played(by checking the play_next flag)
             await self.play_next.wait()
@@ -97,12 +97,7 @@ class MPlayer():
         """
         if self.player:
             self.player.stop()
-            await self.bot.send_message(self.channel, embed=self.get_embed("Skipped song:", self.curr_song.title))
-
-    def get_embed(self, title, description=None):
-        em = Embed(title=title, description=description, color=0xDEADBF)
-        em.set_author(name="Music Player")
-        return em
+            await self.bot.send_message(self.channel, embed=self.cog.create_embed("Skipped song:", self.curr_song.title))
 
     async def playlist(self):
         """
@@ -119,7 +114,7 @@ class MPlayer():
         for index, song in enumerate(self.queue, start=1):
             description += f"{index} - {song.title}\n"
 
-        await self.bot.send_message(self.channel, embed=self.get_embed('Playlist', description))
+        await self.bot.send_message(self.channel, embed=self.cog.create_embed('Playlist', description))
 
     async def pause(self):
         """
@@ -128,7 +123,7 @@ class MPlayer():
         if self.player:
             if self.player.is_playing():
                 self.player.pause()
-                await self.bot.send_message(self.channel, embed=self.get_embed("Paused Player"))
+                await self.bot.send_message(self.channel, embed=self.cog.create_embed("Paused Player"))
 
     async def resume(self):
         """
@@ -137,7 +132,7 @@ class MPlayer():
         if self.player:
             if not self.player.is_playing():
                 self.player.resume()
-                await self.bot.send_message(self.channel, embed=self.get_embed("Resumed Player"))
+                await self.bot.send_message(self.channel, embed=self.cog.create_embed("Resumed Player"))
 
     async def remove(self, index):
         """
@@ -147,7 +142,7 @@ class MPlayer():
         if self.queue and 0 <= index < len(self.queue):
             song_removed = self.queue[index]
             del self.queue[index]
-            await self.bot.send_message(self.channel, embed=self.get_embed(title="Removed Song",
+            await self.bot.send_message(self.channel, embed=self.cog.create_embed(title="Removed Song",
                                                                            description=song_removed.title))
 
     def after_song(self):
@@ -189,7 +184,7 @@ class Music():
                 return
 
             video_info = await get_video_info(self.bot.session, video_id)
-            if not is_video_valid(video_info):
+            if not video_info or not is_video_valid(video_info):
                 return
 
             if not self.voice_channel:
@@ -266,6 +261,11 @@ class Music():
         await self.voice.disconnect()
         self.voice_channel = None
         self.mplayer = None
+
+    def create_embed(self, title, description=None):
+        em = Embed(title=title, description=description, color=0xDEADBF)
+        em.set_author(name="Music Player")
+        return em
 
 
 def setup(bot):
