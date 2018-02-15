@@ -12,4 +12,4 @@ RUN echo deb http://ftp.debian.org/debian jessie-backports main >> /etc/apt/sour
 RUN apt-get update && apt-get install -y ffmpeg
 RUN pip install -r requirements.txt
 
-CMD ["python", "erica/main.py"]
+CMD ["python", "main.py"]

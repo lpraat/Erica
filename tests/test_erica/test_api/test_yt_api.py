@@ -16,6 +16,10 @@ class TestYoutubeAPI(unittest.TestCase):
             result = await get_video_info(self.session, "r7DQDrRwNgI")
             self.assertTrue(is_video_valid(result))
 
+            result = await get_video_info(self.session, "invalidId")
+            self.assertFalse(is_video_valid(result))
+
+
         self.loop.run_until_complete(get_result())
 
     def tearDown(self):
