@@ -160,11 +160,6 @@ class MPlayer():
         self.curr_song = None
 
 
-def prova(f):
-    def wrap():
-        return f
-
-
 class Music():
     """
     This class represents the Music cog.
