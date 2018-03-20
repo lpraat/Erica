@@ -11,10 +11,5 @@ class Erica(Bot):
 
     def __init__(self, command_prefix, **options):
         super().__init__(command_prefix, **options)
+    
 
-        # the aiohttp session kept by erica
-        asyncio.wait(asyncio.ensure_future(self.load_session()))
-
-    async def load_session(self):
-        async with aiohttp.ClientSession() as session:
-            self.session = session
