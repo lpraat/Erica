@@ -211,8 +211,8 @@ class Music():
             with (await self.mplayer_lock):
                 await self.mplayer.playlist()
 
-    @commands.command(pass_context=True)
-    async def skip(self, ctx):
+    @commands.command()
+    async def skip(self):
         """
         Skips the current song played.
         """
@@ -262,6 +262,7 @@ class Music():
         self.voice_channel = None
         self.mplayer = None
 
+    # TODO every cog has its own embed
     def create_embed(self, title, description=None):
         em = Embed(title=title, description=description, color=0xDEADBF)
         em.set_author(name="Music Player")

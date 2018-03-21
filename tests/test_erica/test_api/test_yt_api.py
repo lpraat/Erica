@@ -1,15 +1,10 @@
 import asyncio
-import unittest
-
-import aiohttp
 
 from erica.api.yt_api import get_video_info, is_video_valid
+from tests.test_erica.test_api.api_test import ApiTest
 
 
-class TestYoutubeAPI(unittest.TestCase):
-    def setUp(self):
-        self.loop = asyncio.get_event_loop()
-        self.session = aiohttp.ClientSession()
+class TestYoutubeAPI(ApiTest):
 
     def test_get_video(self):
         async def get_result():
@@ -19,9 +14,9 @@ class TestYoutubeAPI(unittest.TestCase):
             result = await get_video_info(self.session, "invalidId")
             self.assertFalse(is_video_valid(result))
 
+        asyncio.get_event_loop().run_until_complete(get_result())
 
-        self.loop.run_until_complete(get_result())
 
-    def tearDown(self):
-        self.session.close()
-        self.loop.close()
+
+
+
