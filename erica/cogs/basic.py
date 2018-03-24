@@ -29,7 +29,7 @@ class Basic():
     @commands.command()
     async def repeat(self, times, *message):
         """
-        Repeats a message by speaking out loudly
+        Repeats a message by speaking out loudly.
         :param times: the number of times the message needs to be repeated.
         :param the message: the message to be repeated.
         """
@@ -44,7 +44,7 @@ class Basic():
 
     @commands.command()
     async def ask(self, *question):
-        """Try Erica Magic 8 Ball
+        """Try Erica Magic 8 Ball.
         :param question: the question asked.
         """
 

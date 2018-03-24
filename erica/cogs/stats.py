@@ -3,7 +3,7 @@ from discord.ext import commands
 
 from erica.api.fn_api import get_player_info
 
-keys = ('Matches Played', 'Wins', 'Kills', 'K/d', 'Kills Per Min', 'Avg Survival Time')
+keys = ('Matches Played', 'Wins', 'Kills', 'K/d', 'Kills Per Min', 'Avg Survival Time', 'Win%')
 
 
 class Stats():
@@ -13,7 +13,7 @@ class Stats():
     @commands.command()
     async def fortnite(self, *player_nickname):
         """
-        Retrieves the player fortnite stats given its nickname.
+        Retrieves a fortnite player stats given its nickname.
 
         :param player_nickname: the player's nickname.
         """
