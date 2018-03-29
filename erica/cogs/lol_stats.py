@@ -31,8 +31,7 @@ class LolStats():
                 continue
 
             participant_identities = match_info['participantIdentities']
-            summoner_participant_id_filter = [d['participantId'] for d in participant_identities if
-                                              d['player']['summonerName'] == summoner_name]
+            summoner_participant_id_filter = [d['participantId'] for d in participant_identities if d['player']['summonerName'] == summoner_name]
 
             if summoner_participant_id_filter:
                 participants = match_info['participants']
@@ -46,6 +45,7 @@ class LolStats():
 
         if elo_info:
             description += f"Elo -> {elo_info['tier']} {elo_info['rank']}\n"
+            description += f"League points -> {elo_info['leaguePoints']}\n"
             description += f"Wins -> {elo_info['wins']}\n"
             description += f"Losses -> {elo_info['losses']}\n"
 
@@ -65,6 +65,8 @@ class LolStats():
             return
 
         summoner_info = await get_summoner_info(self.bot.session, summoner_name)
+
+        summoner_name = summoner_info['name']  # since $lol command is case insensitive and we want the real name
 
         if not summoner_info:
             return

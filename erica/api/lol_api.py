@@ -20,10 +20,9 @@ async def get_summoner_info(session, summoner_name):
     """
     async with session.request(url=get_summoner_api + summoner_name, method='get', headers=lol_header) as response:
         if response.status == 200:
-            keys = ('id', 'accountId', 'summonerLevel')
+            keys = ('id', 'accountId', 'summonerLevel', 'name')
             response_json = await response.json()
             response = dict((k, str(v)) for k, v in response_json.items() if k in keys)
-            response['name'] = summoner_name
             return response
 
 
