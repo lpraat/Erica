@@ -2,3 +2,4 @@ discord.py
 youtube_dl
 PyNaCl
 aiohttp
+regex
