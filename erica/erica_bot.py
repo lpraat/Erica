@@ -1,5 +1,6 @@
-import aiohttp
 import asyncio
+
+import aiohttp
 from discord.ext.commands import Bot
 
 

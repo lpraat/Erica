@@ -9,7 +9,7 @@ from erica.erica_bot import Erica
 DESCRIPTION = '''
 Code Red Dustin, Code Red.
 '''
-EXTENSIONS = ["basic", "music", "stats"]
+EXTENSIONS = ["basic", "music", "fn_stats", "lol_stats"]
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)

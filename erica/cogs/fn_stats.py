@@ -6,7 +6,7 @@ from erica.api.fn_api import get_player_info
 keys = ('Matches Played', 'Wins', 'Kills', 'K/d', 'Kills Per Min', 'Avg Survival Time', 'Win%')
 
 
-class Stats():
+class FortniteStats():
     def __init__(self, bot):
         self.bot = bot
 
@@ -47,4 +47,4 @@ def setup(bot):
     """
     This method is needed for this extension to be loaded properly by the bot.
     """
-    bot.add_cog(Stats(bot))
+    bot.add_cog(FortniteStats(bot))

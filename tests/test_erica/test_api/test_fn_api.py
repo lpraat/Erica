@@ -1,4 +1,5 @@
 import asyncio
+
 from erica.api.fn_api import get_player_info
 from tests.test_erica.test_api.api_test import ApiTest
 
