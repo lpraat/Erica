@@ -34,6 +34,7 @@ class MPlayer():
         self.play_next = asyncio.Event()
         self.player = None
         self.curr_song = None
+        self.paused = False
         self.startup()
 
     def startup(self):
@@ -93,9 +94,9 @@ class MPlayer():
 
     async def skip(self):
         """
-        If the player is active, i.e. there is a song playing or paused, skips the current song.
+        If the player is active, i.e. there is a song playing and the player is not paused, skips the current song.
         """
-        if self.player:
+        if self.player and not self.paused:
             self.player.stop()
             await self.bot.send_message(self.channel, embed=self.cog.create_embed("Skipped song:", self.curr_song.title))
 
@@ -123,6 +124,7 @@ class MPlayer():
         if self.player:
             if self.player.is_playing():
                 self.player.pause()
+                self.paused = True
                 await self.bot.send_message(self.channel, embed=self.cog.create_embed("Paused Player"))
 
     async def resume(self):
@@ -132,6 +134,7 @@ class MPlayer():
         if self.player:
             if not self.player.is_playing():
                 self.player.resume()
+                self.paused = False
                 await self.bot.send_message(self.channel, embed=self.cog.create_embed("Resumed Player"))
 
     async def remove(self, index):
