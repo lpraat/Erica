@@ -81,8 +81,11 @@ class MPlayer():
         """
         while self.voice:
             self.curr_song = await self.play_queue.get()
-            self.player = await self.voice.create_ytdl_player(self.curr_song.url, after=self.after_song)
-            self.player.start()
+            try:
+                self.player = await self.voice.create_ytdl_player(self.curr_song.url, after=self.after_song)
+                self.player.start()
+            except:
+                self.after_song()
             await self.bot.send_message(self.channel, embed=self.cog.create_embed("Now playing:", self.curr_song.title))
 
             # waiting until the next song need to be played(by checking the play_next flag)
