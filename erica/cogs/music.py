@@ -200,9 +200,14 @@ class Music():
                     return
 
                 channel = ctx.message.channel
-                self.voice = await self.bot.join_voice_channel(self.voice_channel)
-                logger.info(f"Joined channel {self.voice_channel}")
 
+                try:
+                    self.voice = await self.bot.join_voice_channel(self.voice_channel)
+                except:
+                    self.voice_channel = None
+                    return
+
+                logger.info(f"Joined channel {self.voice_channel}")
                 self.mplayer = MPlayer(self, self.voice, channel)
 
             new_song = Song(video_info['items'][0]['snippet']['title'], video_id)
@@ -265,6 +270,7 @@ class Music():
         It disconnects erica from the voice channel and deletes the music player.
         """
         await self.voice.disconnect()
+
         self.voice_channel = None
         self.mplayer = None
 
