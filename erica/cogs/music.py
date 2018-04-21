@@ -203,7 +203,7 @@ class Music():
 
                 try:
                     self.voice = await self.bot.join_voice_channel(self.voice_channel)
-                except:
+                except TimeoutError:
                     self.voice_channel = None
                     return
 
