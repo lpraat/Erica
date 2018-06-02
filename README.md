@@ -1,5 +1,7 @@
 # Erica Bot
-![Image of license](https://img.shields.io/github/license/lpraat/Erica.svg)  ![Image of discordpy](https://img.shields.io/badge/discord-py-blue.svg)
+
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![DiscordPy](https://img.shields.io/badge/discord-py-blue.svg)](https://github.com/Rapptz/discord.py)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
 
 # Features
