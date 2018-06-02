@@ -1,6 +1,6 @@
 import asyncio
 
-from erica.api.lol_api import get_summoner_info, get_league_positions, get_matches_stats, get_recent_matches
+from erica.api.lol_api import get_summoner_info, get_league_info, get_matches_stats, get_recent_matches
 from erica.cogs.lol_stats import LolStats
 from tests.test_erica.test_api.api_test import ApiTest
 
@@ -23,7 +23,7 @@ class TestLolApi(ApiTest):
             summoner_id = result['id']
             summoner_name = result['name']
 
-            result = await get_league_positions(self.session, summoner_id)
+            result = await get_league_info(self.session, summoner_id)
             self.assertIsNotNone(result)
 
             match_ids = await get_recent_matches(self.session, account_id)

@@ -35,12 +35,13 @@ class Basic():
         """
         try:
             times = int(times)
-            times = min(times, 20)  # repeat at maximum 20 times
-
-            for i in range(int(times)):
-                await self.bot.say(" ".join(message), tts=True)
         except ValueError:
             logger.info("Time in repeat command must be integer")
+
+        times = min(times, 20)  # repeat at maximum 20 times
+
+        for i in range(times):
+            await self.bot.say(" ".join(message), tts=True)
 
     @commands.command()
     async def ask(self, *question):

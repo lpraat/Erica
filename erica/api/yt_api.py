@@ -16,7 +16,6 @@ async def get_video_info(session, video_id):
             return await response.json()
 
 
-
 def is_video_valid(video):
     """
     Checks if a video is valid by looking at the video info.

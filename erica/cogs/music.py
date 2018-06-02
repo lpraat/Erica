@@ -2,10 +2,10 @@ import asyncio
 import logging
 from asyncio import Lock
 
-from discord import Embed
 from discord.ext import commands
 
 from erica.api.yt_api import get_video_info, is_video_valid
+from erica.cog import Cog
 from erica.utils import get_param
 
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ class MPlayer():
         :param song: the song to be added.
         """
         self.queue.append(song)
-        if len(self.queue) == 1 and self.curr_song == None:
+        if len(self.queue) == 1 and self.curr_song is None:
             await self.add_song_to_player()
 
         await self.bot.send_message(self.channel, embed=self.cog.create_embed("Added song:", song.title))
@@ -149,7 +149,7 @@ class MPlayer():
             song_removed = self.queue[index]
             del self.queue[index]
             await self.bot.send_message(self.channel, embed=self.cog.create_embed(title="Removed Song",
-                                                                           description=song_removed.title))
+                                                                                  description=song_removed.title))
 
     def after_song(self):
         """
@@ -166,14 +166,16 @@ class MPlayer():
         self.curr_song = None
 
 
-class Music():
+class Music(Cog):
     """
     This class represents the Music cog.
     It handles Erica's music commands for playing music.
     """
     def __init__(self, bot):
+        Cog.__init__(self, "Music Player", 0xDEADBF)
         self.bot = bot
         self.mplayer = None
+        self.voice = None
         self.voice_channel = None
         self.mplayer_lock = Lock()
 
@@ -270,15 +272,8 @@ class Music():
         It disconnects erica from the voice channel and deletes the music player.
         """
         await self.voice.disconnect()
-
         self.voice_channel = None
         self.mplayer = None
-
-    # TODO every cog has its own embed
-    def create_embed(self, title, description=None):
-        em = Embed(title=title, description=description, color=0xDEADBF)
-        em.set_author(name="Music Player")
-        return em
 
 
 def setup(bot):
