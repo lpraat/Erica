@@ -45,7 +45,7 @@ async def get_recent_matches(session, account_id):
     :param account_id: the summoner's account id.
     :return: a list with all the ids as strings.
     """
-    async with session.request(url=get_all_matches_api + account_id + "/recent", method='get',
+    async with session.request(url=get_all_matches_api + account_id, method='get',
                                headers=lol_header) as response:
         if response.status == 200:
             matches = await response.json()
