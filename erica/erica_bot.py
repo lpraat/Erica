@@ -6,8 +6,7 @@ from discord.ext.commands import Bot
 
 class Erica(Bot):
     """
-    This class represent the Erica bot.
-    It extends the Bot class provided by the discord.py.
+    The Erica bot.
     """
 
     def __init__(self, command_prefix, **options):

@@ -3,7 +3,7 @@ from discord import Embed
 
 class Cog:
     """
-    Cogs can inherit this class to have their own embed creator.
+    Cogs can inherit this to have their own embed creator.
     The embed is characterized by a name and a color.
     """
     def __init__(self, name, color):

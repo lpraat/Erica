@@ -40,6 +40,6 @@ class FortniteStats(Cog):
 
 def setup(bot):
     """
-    This method is needed for this extension to be loaded properly by the bot.
+    This is needed for this extension to be loaded properly by the bot.
     """
     bot.add_cog(FortniteStats(bot))

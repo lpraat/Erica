@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class Basic():
     """
-    This class represents the Basic cog.
+    Basic cog.
     It handles Erica's basic commands.
     """
 
@@ -58,6 +58,6 @@ class Basic():
 
 def setup(bot):
     """
-    This method is needed for this extension to be loaded properly by the bot.
+    This is needed for this extension to be loaded properly by the bot.
     """
     bot.add_cog(Basic(bot))

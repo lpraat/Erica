@@ -29,9 +29,7 @@ class TestLolApi(ApiTest):
             match_ids = await get_recent_matches(self.session, account_id)
 
             if match_ids:
-
                 matches_stats = await get_matches_stats(self.session, match_ids)
-
                 if matches_stats:
                     self.assertIsNotNone(lolstats.kda(lolstats.get_summoner_match_stats(matches_stats, summoner_name)))
 

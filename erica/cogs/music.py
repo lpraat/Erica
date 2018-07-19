@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class Song():
     """
-    This class represents a song played by the MPlayer.
+    A song played by the MPlayer.
     """
     def __init__(self, title, id):
         self.url = "https://www.youtube.com/watch?v=" + id
@@ -22,7 +22,7 @@ class Song():
 
 class MPlayer():
     """
-    This class represents the music player used by the music cog to play music.
+    The music player used by the music cog to play music.
     """
     def __init__(self, cog, voice, channel):
         self.cog = cog
@@ -153,7 +153,7 @@ class MPlayer():
 
     def after_song(self):
         """
-        This method is called by the external thread used for playing the song after the song is stopped/consumed.
+        This is called by the external thread used for playing the song after the song is stopped/consumed.
         """
         self.bot.loop.call_soon_threadsafe(self.set_play_next)
 
@@ -168,7 +168,7 @@ class MPlayer():
 
 class Music(Cog):
     """
-    This class represents the Music cog.
+    The Music cog.
     It handles Erica's music commands for playing music.
     """
     def __init__(self, bot):
@@ -268,7 +268,7 @@ class Music(Cog):
 
     async def reset_music(self):
         """
-        This method is called by the mplayer when all the songs have been consumed.
+        This is called by the mplayer when all the songs have been consumed.
         It disconnects erica from the voice channel and deletes the music player.
         """
         await self.voice.disconnect()
@@ -278,6 +278,6 @@ class Music(Cog):
 
 def setup(bot):
     """
-    This method is needed for this extension to be loaded properly by the bot.
+    This is needed for this extension to be loaded properly by the bot.
     """
     bot.add_cog(Music(bot))
