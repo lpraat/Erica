@@ -1,6 +1,6 @@
 from os import getenv
 
-YOUTUBE_KEY = getenv("YTKEY")
+YOUTUBE_KEY = getenv('YTKEY')
 yt_api = f"https://www.googleapis.com/youtube/v3/videos?key={YOUTUBE_KEY}"
 
 

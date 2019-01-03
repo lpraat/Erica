@@ -1,7 +1,7 @@
 import asyncio
 from os import getenv
 
-LOL_KEY = getenv("LOLKEY")
+LOL_KEY = getenv('LOLKEY')
 lol_header = {'X-Riot-Token': LOL_KEY}
 
 riot_api = "https://euw1.api.riotgames.com"

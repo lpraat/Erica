@@ -15,4 +15,3 @@ class TestFortniteApi(ApiTest):
             self.assertTrue('error' in result)
 
         asyncio.get_event_loop().run_until_complete(get_result())
-

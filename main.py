@@ -6,10 +6,10 @@ import discord
 
 from erica.erica_bot import Erica
 
-DESCRIPTION = '''
+DESCRIPTION = """
 Code Red Dustin, Code Red.
-'''
-EXTENSIONS = ["basic", "music", "fn_stats", "lol_stats"]
+"""
+EXTENSIONS = ['basic', 'music', 'fn_stats', 'lol_stats']
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -24,6 +24,7 @@ bot = Erica(command_prefix="$", description=DESCRIPTION)
 @bot.event
 async def on_ready():
     logging.info("Logged in as " + bot.user.name)
+
 
 @bot.event
 async def on_command_error(error, ctx):

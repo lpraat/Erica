@@ -1,6 +1,6 @@
 from os import getenv
 
-FORTNITE_KEY = getenv("FNKEY")
+FORTNITE_KEY = getenv('FNKEY')
 fornite_api = 'https://api.fortnitetracker.com/v1/profile/pc/'
 fornite_header = {'TRN-Api-Key': FORTNITE_KEY}
 

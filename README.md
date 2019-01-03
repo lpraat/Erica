@@ -11,4 +11,3 @@
 
 # FAQ 
 - **Why Erica?** You better watch Stranger Things!
-- **How can I try this bot?** This bot is private. If you want to try it you can contact me on Discord(Lollo#4246) and I'll send you an invite to join the server where you can find Erica :P

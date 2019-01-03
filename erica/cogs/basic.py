@@ -6,21 +6,21 @@ from discord.ext import commands
 logger = logging.getLogger(__name__)
 
 
-class Basic():
+class Basic:
     """
     Basic cog.
     It handles Erica's basic commands.
     """
 
     ASK_ANSWERS = {
-        "1": "Yes! Definitely.",
-        "2": "I'm absolutely sure!",
-        "3": "I think so, but I'm not completely sure. You better ask my brother!",
-        "4": "I don't think so. You better ask Lucas!",
-        "5": "Shut your mouth, nerd!",
-        "6": "Yeeee.. NO!",
-        "7": "Nope!",
-        "8": "Don't know. Don't care."
+        '1': "Yes! Definitely.",
+        '2': "I'm absolutely sure!",
+        '3': "I think so, but I'm not completely sure. You better ask my brother!",
+        '4': "I don't think so. You better ask Lucas!",
+        '5': "Shut your mouth, nerd!",
+        '6': "Yeeee.. NO!",
+        '7': "Nope!",
+        '8': "Don't know. Don't care."
     }
 
     def __init__(self, bot):

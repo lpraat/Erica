@@ -11,7 +11,7 @@ from erica.utils import get_param
 logger = logging.getLogger(__name__)
 
 
-class Song():
+class Song:
     """
     A song played by the MPlayer.
     """
@@ -20,7 +20,7 @@ class Song():
         self.title = title
 
 
-class MPlayer():
+class MPlayer:
     """
     The music player used by the music cog to play music.
     """
@@ -187,7 +187,7 @@ class Music(Cog):
         """
         with (await self.mplayer_lock):
 
-            video_id = get_param(url, "v")
+            video_id = get_param(url, 'v')
             if not video_id:
                 return
 
