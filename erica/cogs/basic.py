@@ -2,11 +2,12 @@ import logging
 import random
 
 from discord.ext import commands
+from erica.cog import Cog
 
 logger = logging.getLogger(__name__)
 
 
-class Basic:
+class Basic(Cog):
     """
     Basic cog.
     It handles Erica's basic commands.
@@ -24,10 +25,11 @@ class Basic:
     }
 
     def __init__(self, bot):
+        Cog.__init__(self, "basic")
         self.bot = bot
 
     @commands.command()
-    async def repeat(self, times, *message):
+    async def repeat(self, ctx, times, *message):
         """
         Repeats a message by speaking out loudly.
         :param times: the number of times the message needs to be repeated.
@@ -41,19 +43,19 @@ class Basic:
         times = min(times, 20)  # repeat at maximum 20 times
 
         for i in range(times):
-            await self.bot.say(" ".join(message), tts=True)
+            await ctx.send(" ".join(message), tts=True)
 
     @commands.command()
-    async def ask(self, *question):
+    async def ask(self, ctx, *question):
         """Try Erica Magic 8 Ball.
         :param question: the question asked.
         """
 
         if "?" not in " ".join(question):
-            await self.bot.say("That's not a question, fella!")
+            await ctx.send("That's not a question, fella!")
         else:
             answer = self.ASK_ANSWERS.get(str(random.randint(1, len(self.ASK_ANSWERS))))
-            await self.bot.say(answer)
+            await ctx.send(answer)
 
 
 def setup(bot):

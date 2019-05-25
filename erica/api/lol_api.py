@@ -1,14 +1,15 @@
 import asyncio
+
 from os import getenv
 
 LOL_KEY = getenv('LOLKEY')
 lol_header = {'X-Riot-Token': LOL_KEY}
 
 riot_api = "https://euw1.api.riotgames.com"
-get_summoner_api = riot_api + "/lol/summoner/v3/summoners/by-name/"
-get_league_api = riot_api + "/lol/league/v3/positions/by-summoner/"
-get_all_matches_api = riot_api + "/lol/match/v3/matchlists/by-account/"
-get_match_api = riot_api + "/lol/match/v3/matches/"
+get_summoner_api = riot_api + "/lol/summoner/v4/summoners/by-name/"
+get_league_api = riot_api + "/lol/league/v4/positions/by-summoner/"
+get_all_matches_api = riot_api + "/lol/match/v4/matchlists/by-account/"
+get_match_api = riot_api + "/lol/match/v4/matches/"
 
 
 async def get_summoner_info(session, summoner_name):

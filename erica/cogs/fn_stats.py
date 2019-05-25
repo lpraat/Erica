@@ -1,5 +1,4 @@
 from discord.ext import commands
-
 from erica.api.fn_api import get_player_info
 from erica.cog import Cog
 
@@ -12,7 +11,7 @@ class FortniteStats(Cog):
         self.bot = bot
 
     @commands.command()
-    async def fortnite(self, *player_nickname):
+    async def fortnite(self, ctx, *player_nickname):
         """
         Retrieves the stats of a Fortnite player.
 
@@ -35,11 +34,4 @@ class FortniteStats(Cog):
             for (key, value) in player_stats.items():
                 description += key + " -> " + value + "\n"
 
-            await self.bot.say(embed=self.create_embed(player_nickname, description=description))
-
-
-def setup(bot):
-    """
-    This is needed for this extension to be loaded properly by the bot.
-    """
-    bot.add_cog(FortniteStats(bot))
+        await ctx.send(embed=self.create_embed(player_nickname, description=description))

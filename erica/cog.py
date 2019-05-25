@@ -1,12 +1,10 @@
 from discord import Embed
+from discord.ext import commands
 
 
-class Cog:
-    """
-    Cogs can inherit this to have their own embed creator.
-    The embed is characterized by a name and a color.
-    """
-    def __init__(self, name, color):
+class Cog(commands.Cog):
+
+    def __init__(self, name, color=0x0):
         self.name = name
         self.color = color
 

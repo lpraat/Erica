@@ -1,15 +1,55 @@
 import asyncio
 import logging
+import discord
+import youtube_dl
+
 from asyncio import Lock
-
 from discord.ext import commands
-
+from discord import VoiceChannel
 from erica.api.yt_api import get_video_info, is_video_valid
 from erica.cog import Cog
 from erica.utils import get_param
 
 logger = logging.getLogger(__name__)
 
+# Suppress noise about console usage from errors
+youtube_dl.utils.bug_reports_message = lambda: ''
+
+ytdl = youtube_dl.YoutubeDL({
+    'format': 'bestaudio/best',
+    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
+    'restrictfilenames': True,
+    'noplaylist': True,
+    'nocheckcertificate': True,
+    'ignoreerrors': False,
+    'logtostderr': False,
+    'quiet': True,
+    'no_warnings': True,
+    'default_search': 'auto',
+    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
+})
+
+
+class YTDLSource(discord.PCMVolumeTransformer):
+    def __init__(self, source, *, data, volume=0.5):
+        super().__init__(source, volume)
+
+        self.data = data
+
+        self.title = data.get('title')
+        self.url = data.get('url')
+
+    @classmethod
+    async def from_url(cls, url, *, loop=None, stream=False):
+        loop = loop or asyncio.get_event_loop()
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
+
+        #if 'entries' in data:
+            # take first item from a playlist
+        #    data = data['entries'][0]
+
+        filename = data['url'] if stream else ytdl.prepare_filename(data)
+        return cls(discord.FFmpegPCMAudio(filename, options='-vn'), data=data)
 
 class Song:
     """
@@ -32,9 +72,7 @@ class MPlayer:
         self.queue = []
         self.play_queue = asyncio.Queue(loop=self.bot.loop)
         self.play_next = asyncio.Event()
-        self.player = None
         self.curr_song = None
-        self.paused = False
         self.startup()
 
     def startup(self):
@@ -53,7 +91,7 @@ class MPlayer:
     async def next_with_last_check(self):
         """
         Checks if there is at least one song in the queue to process.
-        If so it puts in the player otherwise the music player is reset(last song has been played and it is possible to
+        If so it puts it in the music player otherwise the music player is reset(last song has been played and it is possible to
         left the voice channel).
         """
         if self.queue:
@@ -72,21 +110,22 @@ class MPlayer:
         if len(self.queue) == 1 and self.curr_song is None:
             await self.add_song_to_player()
 
-        await self.bot.send_message(self.channel, embed=self.cog.create_embed("Added song:", song.title))
+        await self.channel.send(embed=self.cog.create_embed("Added song:", song.title))
 
     async def play(self):
         """
-        This is the loop running the player.
-        It processes song from the play queue.
+        This is the loop running the music player.
+        It processes songs from the play queue.
         """
         while self.voice:
             self.curr_song = await self.play_queue.get()
             try:
-                self.player = await self.voice.create_ytdl_player(self.curr_song.url, after=self.after_song)
-                self.player.start()
-            except:
+                player = await YTDLSource.from_url(self.curr_song.url, loop=self.bot.loop)
+                self.voice.play(player, after=self.after_song)
+            except Exception as e:
                 self.after_song()
-            await self.bot.send_message(self.channel, embed=self.cog.create_embed("Now playing:", self.curr_song.title))
+
+            await self.channel.send(embed=self.cog.create_embed("Now playing:", self.curr_song.title))
 
             # waiting until the next song need to be played(by checking the play_next flag)
             await self.play_next.wait()
@@ -97,11 +136,11 @@ class MPlayer:
 
     async def skip(self):
         """
-        If the player is active, i.e. there is a song playing and the player is not paused, skips the current song.
+        If the music player is active, i.e. there is a song playing and the music player is not paused, skips the current song.
         """
-        if self.player and not self.paused:
-            self.player.stop()
-            await self.bot.send_message(self.channel, embed=self.cog.create_embed("Skipped song:", self.curr_song.title))
+        if self.voice.is_playing() and not self.voice.is_paused():
+            self.voice.stop()
+            await self.channel.send(embed=self.cog.create_embed("Skipped song:", self.curr_song.title))
 
     async def playlist(self):
         """
@@ -109,7 +148,7 @@ class MPlayer:
         """
         description = ""
 
-        playing_song = self.curr_song.title if self.curr_song and self.player and self.player.is_playing() else None
+        playing_song = self.curr_song.title if self.curr_song and self.voice.is_playing() else None
         if playing_song:
             description += f"Playing: {playing_song}\n"
         else:
@@ -118,27 +157,23 @@ class MPlayer:
         for index, song in enumerate(self.queue, start=1):
             description += f"{index} - {song.title}\n"
 
-        await self.bot.send_message(self.channel, embed=self.cog.create_embed('Playlist', description))
+        await self.channel.send(embed=self.cog.create_embed('Playlist', description))
 
     async def pause(self):
         """
-        Pauses the player.
+        Pauses the music player.
         """
-        if self.player:
-            if self.player.is_playing():
-                self.player.pause()
-                self.paused = True
-                await self.bot.send_message(self.channel, embed=self.cog.create_embed("Paused Player"))
+        if self.voice.is_playing():
+            self.voice.pause()
+            await self.channel.send(embed=self.cog.create_embed("Paused Player"))
 
     async def resume(self):
         """
-        Resumes the player.
+        Resumes the music player.
         """
-        if self.player:
-            if not self.player.is_playing():
-                self.player.resume()
-                self.paused = False
-                await self.bot.send_message(self.channel, embed=self.cog.create_embed("Resumed Player"))
+        if not self.voice.is_playing():
+            self.voice.resume()
+            await self.channel.send(embed=self.cog.create_embed("Resumed Player"))
 
     async def remove(self, index):
         """
@@ -148,10 +183,9 @@ class MPlayer:
         if self.queue and 0 <= index < len(self.queue):
             song_removed = self.queue[index]
             del self.queue[index]
-            await self.bot.send_message(self.channel, embed=self.cog.create_embed(title="Removed Song",
-                                                                                  description=song_removed.title))
+            await self.channel.send(embed=self.cog.create_embed(title="Removed Song", description=song_removed.title))
 
-    def after_song(self):
+    def after_song(self, error=None):
         """
         This is called by the external thread used for playing the song after the song is stopped/consumed.
         """
@@ -162,7 +196,6 @@ class MPlayer:
         Sets the player to be ready to play the next song.
         """
         self.play_next.set()
-        self.player = None
         self.curr_song = None
 
 
@@ -179,7 +212,7 @@ class Music(Cog):
         self.voice_channel = None
         self.mplayer_lock = Lock()
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def play(self, ctx, url):
         """
         Plays a youtube song given the url.
@@ -196,7 +229,7 @@ class Music(Cog):
                 return
 
             if not self.voice_channel:
-                self.voice_channel = ctx.message.author.voice.voice_channel
+                self.voice_channel = ctx.author.voice.channel
 
                 if not self.voice_channel:
                     return
@@ -204,7 +237,7 @@ class Music(Cog):
                 channel = ctx.message.channel
 
                 try:
-                    self.voice = await self.bot.join_voice_channel(self.voice_channel)
+                    self.voice = await VoiceChannel.connect(self.voice_channel)
                 except TimeoutError:
                     self.voice_channel = None
                     return
@@ -216,7 +249,7 @@ class Music(Cog):
             await self.mplayer.add_song(new_song)
 
     @commands.command()
-    async def playlist(self):
+    async def playlist(self, ctx):
         """
         Shows the playlist.
         """
@@ -225,7 +258,7 @@ class Music(Cog):
                 await self.mplayer.playlist()
 
     @commands.command()
-    async def skip(self):
+    async def skip(self, ctx):
         """
         Skips the current song played.
         """
@@ -234,7 +267,7 @@ class Music(Cog):
                 await self.mplayer.skip()
 
     @commands.command()
-    async def pause(self):
+    async def pause(self, ctx):
         """
         Pauses the music player.
         """
@@ -243,7 +276,7 @@ class Music(Cog):
                 await self.mplayer.pause()
 
     @commands.command()
-    async def resume(self):
+    async def resume(self, ctx):
         """
         Resumes the music player.
         """
@@ -252,7 +285,7 @@ class Music(Cog):
                 await self.mplayer.resume()
 
     @commands.command()
-    async def remove(self, song_number):
+    async def remove(self, ctx, song_number):
         """
         Removes a song from the playlist.
         :param song_number: the number of the song in the playlist to be removed.
@@ -274,10 +307,3 @@ class Music(Cog):
         await self.voice.disconnect()
         self.voice_channel = None
         self.mplayer = None
-
-
-def setup(bot):
-    """
-    This is needed for this extension to be loaded properly by the bot.
-    """
-    bot.add_cog(Music(bot))

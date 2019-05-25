@@ -1,6 +1,6 @@
 import regex
-from discord.ext import commands
 
+from discord.ext import commands
 from erica.api.lol_api import get_summoner_info, get_league_info, get_recent_matches, get_matches_stats
 from erica.cog import Cog
 
@@ -80,7 +80,7 @@ class LolStats(Cog):
         return description
 
     @commands.command()
-    async def lol(self, *summoner_name):
+    async def lol(self, ctx, *summoner_name):
         """
         Retrieves the stats of a League of Legends player.
         :param summoner_name: the player's summoner name.
@@ -102,13 +102,5 @@ class LolStats(Cog):
         match_stats = await get_matches_stats(self.bot.session, recent_matches) if recent_matches else None
         summoner_matches_info = self.get_summoner_match_stats(match_stats, summoner_name) if match_stats else None
 
-        await self.bot.say(embed=self.create_embed(summoner_name,
-                                                   description=self.build_description(summoner_info, solo_queue_info,
-                                                                                      summoner_matches_info)))
-
-
-def setup(bot):
-    """
-    This is needed for this extension to be loaded properly by the bot.
-    """
-    bot.add_cog(LolStats(bot))
+        await ctx.send(embed=self.create_embed(summoner_name,
+                       description=self.build_description(summoner_info, solo_queue_info, summoner_matches_info)))
